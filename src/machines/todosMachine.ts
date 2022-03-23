@@ -29,12 +29,10 @@ export const todosMachine = createMachine<TTodoMachineContext>({
       invoke: {
         id: 'fetchTodos',
         src: async () => {
-          const todos = JSON.parse(localStorage.getItem('todos') || '[]');
-
           // faking a load time
           await new Promise((resolve) => setTimeout(resolve, 2000));
 
-          return todos;
+          return [];
         },
         onDone: {
           actions: assign({
@@ -46,53 +44,41 @@ export const todosMachine = createMachine<TTodoMachineContext>({
       on: {
         UPDATE_NEW_TODO: {
           actions: assign({
-            todo: (ctx, e) => e.value,
-            isError: (ctx) => false,
+            todo: (context, e) => e.value,
+            isError: (context) => false,
           }),
         },
         ADD_TODO: {
           actions: assign({
-            todo: (ctx) => '',
-            isError: (ctx) => (ctx.todo.length > 0 ? false : true),
-            todos: (ctx) => {
-              const todos = ctx.todo.length
+            todo: (context) => '',
+            isError: (context) => (context.todo.length > 0 ? false : true),
+            todos: (context) => {
+              return context.todo.length
                 ? [
-                    ...ctx.todos,
+                    ...context.todos,
                     {
                       id: uuid().toString(),
-                      text: ctx.todo,
+                      text: context.todo,
                       completed: false,
                     },
                   ]
-                : [...ctx.todos];
-
-              persistTodos(todos);
-
-              return todos;
+                : [...context.todos];
             },
           }),
         },
         TOGGLE_TODO: {
           actions: assign({
-            todos: (ctx, e) => {
-              const todos = ctx.todos.map((todo) =>
+            todos: (context, e) => {
+              return context.todos.map((todo) =>
                 todo.id === e.value.id ? { ...todo, completed: !todo.completed } : todo
               );
-
-              persistTodos(todos);
-
-              return todos;
             },
           }),
         },
         REMOVE_TODO: {
           actions: assign({
-            todos: (ctx, e) => {
-              const todos = ctx.todos.filter((todo) => todo.id !== e.value.id);
-
-              persistTodos(todos);
-
-              return todos;
+            todos: (context, e) => {
+              return context.todos.filter((todo) => todo.id !== e.value.id);
             },
           }),
         },
@@ -100,7 +86,3 @@ export const todosMachine = createMachine<TTodoMachineContext>({
     },
   },
 });
-
-const persistTodos = (todos: TTodoMachineContext['todos']) => {
-  localStorage.setItem('todos', JSON.stringify(todos));
-};

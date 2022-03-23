@@ -18,8 +18,8 @@ module.exports = {
   ],
   plugins: ['react-redux', 'jsx-a11y', 'test-selectors'],
   rules: {
-    '@typescript-eslint/no-explicit-any': 1,
-    'react-hooks/exhaustive-deps': 1,
+    '@typescript-eslint/no-explicit-any': 0,
+    'react-hooks/exhaustive-deps': 0,
     'react-redux/mapDispatchToProps-returns-object': 0,
     'react/jsx-sort-default-props': ['error', { ignoreCase: true }],
     'react/jsx-sort-props': [
